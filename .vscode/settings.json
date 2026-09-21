@@ -1,0 +1,78 @@
+{
+  "files.exclude": {
+    "**/*.aux": true,
+    "**/*.bbl": true,
+    "**/*.bcf": true,
+    "**/*.blg": true,
+    "**/*.fdb_latexmk": true,
+    "**/*.fls": true,
+    "**/*.lof": true,
+    "**/*.log": true,
+    "**/*.lot": true,
+    "**/*.out": true,
+    "**/*.run.xml": true,
+    "**/*.synctex.gz": true,
+    "**/*.toc": true,
+    "**/*.glo": true,
+    "**/*.glo-abr": true,
+    "**/*.gls": true,
+    "**/*.gls-abr": true,
+    "**/*.glg": true,
+    "**/*.glg-abr": true,
+    "**/*.ist": true,
+    "**/*.data.minted": true,
+    "_minted*/": true
+  },
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.view.pdf.viewer": "tab",
+  // "latex-workshop.linting.chktex.enabled": true,
+  // "latex-workshop.linting.lacheck.enabled": true,
+  "latex-workshop.latex.tools": [
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-shell-escape",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ]
+    },
+    {
+      "name": "biber",
+      "command": "biber",
+      "args": ["%DOCFILE%"]
+    },
+    {
+      "name": "makeglossaries",
+      "command": "makeglossaries",
+      "args": ["%DOCFILE%"]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "pdflatex -> biber -> makeglossaries -> pdflatex x2",
+      "tools": ["pdflatex", "biber", "makeglossaries", "pdflatex", "pdflatex"]
+    },
+    {
+      "name": "pdflatex x2",
+      "tools": ["pdflatex", "pdflatex"]
+    }
+  ],
+  "latex-workshop.latex.recipe.default": "pdflatex -> biber -> makeglossaries -> pdflatex x2",
+  "[latex]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "James-Yu.latex-workshop"
+  },
+  "latex-workshop.formatting.latex": "latexindent",
+  "latex-workshop.formatting.latexindent.path": "latexindent",
+  "latex-workshop.formatting.latexindent.args": [
+    "-c",
+    "%DIR%/",
+    "%TMPFILE%",
+    "-y=defaultIndent: '  '"
+  ],
+  "pasteImage.path": "${currentFileDir}/images",
+  "pasteImage.insertPattern": "\\begin{figure}[h!]\n\t\\centering\n\t\\includegraphics[width=0.3\\linewidth]{content/API_Programming/${imageFilePath}}\n\\end{figure}"
+}
