@@ -100,7 +100,7 @@ a weight. Then, it sums all the weighted inputs and applies a non-linear functio
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-09-33-07.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-09-33-07.png}
 \end{figure}
 
 Where:
@@ -117,7 +117,7 @@ Where:
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-09-36-40.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-09-36-40.png}
 \end{figure}
 
 \section{Activation functions}
@@ -134,15 +134,15 @@ Common activation functions are: ReLU, Sigmoid, Leaky ReLU, Tanh, Softmax, Linea
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-09-41-37.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-09-41-37.png}
 \end{figure}
 
 \section{1. Enforce properties on perceptron's output}
 
-Binary classification problem: seprate positive ($\star$) and negative ($\circ$) samples. For a point $x \in \R^2$,
+Binary classification problem: seprate positive ($\star$) and negative ($\circ$) samples. For a point $x \in \Re^2$,
 the perceptron can predict $p(\star | x)$. For a binary case this implies that $p(\circ | x) = 1 - p(\star | x)$.
 
-The Sigmoid maps any value in $\R$ to the range [0, 1]. The output is squashed between 0 and 1.
+The Sigmoid maps any value in $\Re$ to the range $[0, 1]$. The output is squashed between 0 and 1.
 
 \begin{equation*}
   \sigma(x) = \frac{1}{1 + e^{-x}}
@@ -152,7 +152,7 @@ The Sigmoid maps any value in $\R$ to the range [0, 1]. The output is squashed b
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-09-50-18.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-09-50-18.png}
 \end{figure}
 
 
@@ -160,7 +160,7 @@ The Sigmoid maps any value in $\R$ to the range [0, 1]. The output is squashed b
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-09-51-10.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-09-51-10.png}
 \end{figure}
 
 \section{2. Introduce non-linearities in the model}
@@ -186,7 +186,7 @@ We still need a step to convert logits into valid probabilities
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-10-18-55.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-10-18-55.png}
 \end{figure}
 
 \section{Binary classification}
@@ -205,7 +205,7 @@ only values between 0 and 1
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-10-28-21.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-10-28-21.png}
 \end{figure}
 
 \section{Activation functions for regression models}
@@ -241,7 +241,7 @@ Or, we can evaluate the loss function for a bunch of $\theta$'s, and find the
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-10-40-02.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-10-40-02.png}
 \end{figure}
 
 \section{More complex losses/model}
@@ -322,7 +322,7 @@ For instance, we may want to compute $y = wx + b$
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-11-02-42.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-11-02-42.png}
 \end{figure}
 
 We start from three variables, $w$, $x$ and $y$. The computational graph performs one
@@ -378,7 +378,7 @@ y, the ground truth, acts as a "selector" of the loss term to be applied.
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.3\linewidth]{content/API_Programming/images/2026-09-21-11-21-18.png}
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-21-11-21-18.png}
 \end{figure}
 
 
