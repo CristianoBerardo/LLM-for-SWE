@@ -1,0 +1,254 @@
+\chapter{Transformers}
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-11-47-27.png}
+\end{figure}
+
+Transformers architecture are not longer based on RNN. We shot the model the entire sequence
+wery puerfull, but is expencive.
+
+\section{Simplified architecture}
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    We need yellow imputes and the model give us the green outputs.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-11-49-14.png}
+  \end{minipage}
+\end{center}
+
+We have two types of inputs:
+\begin{itemize}
+  \item FF - Feed forward
+\end{itemize}
+
+
+\section{Generation the first token}
+
+The input sequence  pass to encoder model and the output of the encoder producers a vector for each
+token provided in input. 10 input 10 output, is a property of the attenction layer, this means no compression
+in a single vector and no loss of information if it is a good encoder.
+
+The decoder takes the output of the encoder and we need to speciify the first token, we give the
+special vector. The model will look it and decide then it prdoduce output 1 input 1 output (BOS).
+The output is always a probabiilty function in our vocaboly.
+That word become the second word on the decoder input.
+The encoder knows the intire previous sequence, at the end we produce a end of sequence token (EOS).
+
+\begin{tcolorbox}
+  \textbf{Note}: The decoder will output a prediction for each input token. At inference
+  time, we are interested the latest generated token. At training time,
+  the loss is computed on all tokens generated at that step!
+\end{tcolorbox}
+
+Cosality masking, 2 input 2 output, but the first token LLM should not see on the GUI, it already printed.
+
+
+
+\section{Tokenization}
+
+We need a way to split a sentence into units. This process is called tokenization, and splits the sequence into tokens
+
+Transformers need to process natural language, in the form of sentences, braking into small units.
+
+
+\subsubsection{Character-level}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-11-59.png}
+\end{figure}
+
+Braking up the sentence into characters. Each character is a token.
+
+\begin{flushleft}
+  \begin{minipage}[t]{0.45\linewidth}
+    \raggedright
+    Pros:
+
+    \begin{itemize}
+      \item Simple solutions
+      \item No out-of-vocabulary problem
+      \item Robust to misspellings and variations
+    \end{itemize}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.45\linewidth}
+    \raggedright
+
+    Cons:
+    \begin{itemize}
+      \item Long sequences - transformers, attention mechanisms, are $O(N^2)$ in the sequence length
+      \item Slower/more complex training
+      \item Semantic information is harder to capture
+      \item Inefficient for common words
+    \end{itemize}
+
+  \end{minipage}
+\end{flushleft}
+
+
+
+\subsubsection{Word-level}
+
+Breaks text into individual words. Each word is treated as as token
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-18-02.png}
+\end{figure}
+
+\begin{flushleft}
+  \begin{minipage}[t]{0.45\linewidth}
+    \raggedright
+    Pros:
+
+    \begin{itemize}
+      \item Captures semantic meaning directly
+      \item Shorter sequences compared to character-level
+      \item More intuitive/easier to understand
+    \end{itemize}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.45\linewidth}
+    \raggedright
+
+    Cons:
+    \begin{itemize}
+      \item Out-of-vocabulary (OOV) issues for rare or new words
+      \item Does not leverage some information shared among words (e.g. prefixes/suffixes)
+      \item Larger vocabulary needed, leading to memory inefficiency
+      \item Vectors for rarer words are trained “less”
+    \end{itemize}
+
+  \end{minipage}
+\end{flushleft}
+
+\subsubsection{Subword-level}
+
+Breaks text into subword units (e.g., prefixes, suffixes). fastText uses n-grams contained in each word.
+A more commonly used method is Byte-Pair Encoding (BPE)
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-19-53.png}
+\end{figure}
+
+
+\begin{flushleft}
+  \begin{minipage}[t]{0.45\linewidth}
+    \raggedright
+    Pros:
+
+    \begin{itemize}
+      \item Balances between character-level and word-level
+      \item Handles out-of-vocabulary words effectively
+      \item Compact vocabulary with better generalization
+      \item Efficient for both frequent and rare words
+    \end{itemize}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.45\linewidth}
+    \raggedright
+
+    Cons:
+    \begin{itemize}
+      \item Common words are represented by fewer subwords w.r.t. rarer words
+      \item Requires defining a subword definition policy
+      \item The subword definition policy may introduce some computational overhead
+    \end{itemize}
+
+  \end{minipage}
+\end{flushleft}
+
+
+In practice, subword-level is the most commonly adopted tokenization method.
+A simple, yet commonly adopted technique is BPE - Byte-Pair Encoding.
+
+\section{Byte-Pair Encoding - desiderata}
+
+Data driven approach is used to chose "best" tokens. To do so, we need a colection of text called
+\textbf{corpus}.
+
+\begin{itemize}
+  \item Common words to be encoded into a single token
+  \item Rare words to be encoded into multiple tokens
+\end{itemize}
+
+Also we difeine the desired maximum number of tokens
+
+
+\begin{enumerate}
+  \item The corpus is initially encoded with 1 carachers byte  = 1 token so we address all possible
+        sentences.
+  \item We count the frequency of each pair of subsequent tokens is countd in the copus
+  \item The mosr frequent pair of tokens ($F_1, F_2$) is assiged a new token $T$
+  \item All occurrences of the pair ($F_1, F_2$) in the corpus are replaced with $T$
+  \item The process 2-4 is repeated until the desired number of tokens is reached
+\end{enumerate}
+
+\paragraph{BPE example}: The corpus we we would use as example is "would a woodchuck chuck wood"
+
+\begin{itemize}
+  \item Corpus: "would a woodchuck chuck wood"
+  \item Initial encoding: w | o | u | l | d | \⎵ | a | \⎵ | w | o | o | d | c | h | u | c | k | \⎵ | c | h | u | c | k | \⎵ | w | o | o | d
+  \item Count frequency of pairs: (w, o): 3, (o, o): 2 \dots
+  \item Assign a new token to the most frequent pair: (w, o) → wo
+\end{itemize}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-37-40.png}
+\end{figure}
+
+\subsection{BPE results}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-39-33.png}
+\end{figure}
+
+The number of tokens used to represent the corpus decreases as we
+increase the number of tokens used. There is a reasonable small number of tokens that can be used
+to represent a large corpus.
+
+Typically, 10's to 100's of thousands of tokens are used
+
+\section{Some extra tokens}
+
+We introduce some special tokens to indicate that special positions
+within a sequence. For instance, we can use tokens for beginning/end of sequence during training.
+
+\begin{itemize}
+  \item BOS - Beginning of Sequence
+  \item EOS - End of Sequence
+  \item CLS - Classification token for task-specific use
+  \item SEP - Separator token within the same input. E.g. Separate Question from Answer in Question Answering tasks
+\end{itemize}
+
+
+\section{Positional encoding}
+
+Every time we have a token is associated to a vector learned during the training, start with random vectors, and
+adjust them via gradient descent.
+
+The \textbf{same token} is mapped to the \textbf{same vector} regardless of its position in the sequence.
+This is not ideal. Additionlly the \textbf{Attentiona and Feed Forward does not understand the order} of the elements.
+
+We have to figure it out a way to inject the position before passing it to the transformer.
+This is called \textbf{positional encoding}.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-50-39.png}
+\end{figure}
+
+
+
