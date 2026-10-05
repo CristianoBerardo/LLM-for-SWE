@@ -198,7 +198,7 @@ Also we difeine the desired maximum number of tokens
 
 \begin{itemize}
   \item Corpus: "would a woodchuck chuck wood"
-  \item Initial encoding: w | o | u | l | d | \⎵ | a | \⎵ | w | o | o | d | c | h | u | c | k | \⎵ | c | h | u | c | k | \⎵ | w | o | o | d
+  \item Initial encoding: w | o | u | l | d |  | a |  | w | o | o | d | c | h | u | c | k |   | c | h | u | c | k |  | w | o | o | d
   \item Count frequency of pairs: (w, o): 3, (o, o): 2 \dots
   \item Assign a new token to the most frequent pair: (w, o) → wo
 \end{itemize}
@@ -249,6 +249,556 @@ This is called \textbf{positional encoding}.
   \centering
   \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-30-12-50-39.png}
 \end{figure}
+
+\section{Sinusoidal Positional encoding}
+
+In the paper "Attention is all you need" Google engineers proposed a sinusoidal positional encoding.
+
+
+In the AIAYN paper, the PE
+vectors are defined as:
+
+\begin{equation*}
+  \begin{aligned}
+    PE_{(pos, 2i)} = sin( \frac{pos}{10000^{2i/d_{model}}}) \\
+    PE_{(pos, 2i+1)} = cos( \frac{pos}{10000^{2i/d_{model}}})
+  \end{aligned}
+\end{equation*}
+
+where $pos$ is the position of the token we have some dependencies. 10000 is a magic number
+often used in smaller transformer architecture.
+$i$ the position of the dimension we are filling.
+$d_{model}$ is the dimension of the model, how big are the vectors.
+
+
+\begin{center}
+  \begin{minipage}{0.47\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{content/Parts/images/2026-10-05-08-38-53.png}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.47\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{content/Parts/images/2026-10-05-08-39-30.png}
+  \end{minipage}
+\end{center}
+
+\begin{tcolorbox}
+  \textbf{Error:} in the blue box the formula should be $i = 1$
+\end{tcolorbox}
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-08-51-52.png}
+  \end{minipage}
+\end{center}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-08-52-24.png}
+\end{figure}
+
+\subsection{Positional encoding uniqueness}
+The vector for each position is
+unique… At least for the first  $~60K$ positions ($2\pi \cdot 10000$).
+then they start repeating (for
+longer sequences, we can just
+change the $10K$ constant!)
+
+\section{Positional encoding preserves similarity}
+If position 1 is close to position 2
+(e.g., the third vs the fourth words
+in a sentence) we want positional
+vectors to also be close!
+We can easily verify that using
+trigonometric functions ensures
+that this is the case
+
+Example for max position = 1,000
+and dmodel = 768
+
+
+Cosine similarity of each pair of the
+previous positional vectors
+
+Maximum similarity along the
+diagonal (of course)
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-09-01-21.png}
+\end{figure}
+
+
+\subsection{Learned positional embeddings}
+After the first transformer paper, other people proposed other solutions for positional encoding.
+Some model e.g. GPT family uses posisitona embeddings.
+This approach was also considered in AIAYN,
+but discarded as it did not produce better
+results
+
+\section{Attention}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-09-08-00.png}
+\end{figure}
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+    “How much” of each other vector is added is
+    defined by the attention paid to them. Ideally, useful tokens will be weighted a lot.
+    Unuseful tokens will be weighted less
+
+    The transformer learns to choose these
+    weights based on the input sequence
+
+    Weight sum of the input  = Attention
+
+
+    The attention module requires:  An input (to be contextualized) and A way to define the attention weights
+    The i-th output is defined as
+    \begin{equation*}
+
+      out_i = \sum_{j} Attn\_weight{i,j} \cdot f(in_j)
+    \end{equation*}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-09-12-38.png}
+  \end{minipage}
+\end{center}
+
+\subsection{Classic dictionary lookup}
+A small digression
+
+
+
+
+\subsection{Dot-product attention - Weighted lookup}
+
+
+\subsection{Attention as Keys/Values/Queries}
+We expect to have multiple queries with three seprate "inputs":
+
+\begin{itemize}
+  \item Queries: the value to be looked up, we want 1 output fro each query
+  \item Keys: the values to be matched against the queries
+  \item Values: the values associated to each key
+\end{itemize}
+
+This is why the 3-inputs block in the
+transformers' architecture
+
+\subsection{the 3-inputs block in the transformers' architecture}
+
+How to to compute the attention weights? Since the dot function produce unbounded values,
+we need to normalize them. We can use the softmax.
+
+
+\subsection{Packing everything into matrices}
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    We discussed the situation having a single
+    query. Of course, we can have multiple queries,
+    each treated in the same way
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-09-25-35.png}
+  \end{minipage}
+\end{center}
+
+
+
+
+
+For convenience, we can summarize the set of all queries, keys and values
+as three matrices, Q, K, V.
+
+\begin{itemize}
+  \item Q: contains N queries, each being a $d_k$-dimensional vector
+  \item K: contains M entries, each being a $d_k$-dimensional vector
+  \item V: contains M entries (one value for each key), each being a $d_v$-dimensional vector output
+\end{itemize}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-09-24-00.png}
+\end{figure}
+
+\section{Scaled Dot-product attention}
+
+In the original transformers, the final attention is defined as:
+
+\begin{equation*}
+  Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d_k}})V
+\end{equation*}
+
+\begin{itemize}
+  \item $QK^T$: efficiently computes the dot product between each query and each key.
+        This produces an $N \times M$ matrix
+\end{itemize}
+
+
+\subsection{Attention example}
+
+
+
+\subsection{Types of attention}
+Attention is used in three situations
+in the classic transformer
+architecture.
+
+The first one is called the encoder self-attention, Decoder self-attention, and the third one is called encoder-decoder cross attention.
+
+
+
+\subsubsection{Encoder self-attention}
+
+
+
+
+
+\subsubsection{Decoder (masked) self-attention}
+
+This is the block used by the decoder. Used on the output tockens.
+
+It looks only what has been generated so far, and not the future tokens.
+
+
+
+\subsubsection{Encoder-decoder cross-attention}
+
+Type of attention where part of the input comes from the encoder and part comes from the decoder.
+
+The decoder produce the output and the cross attention, keys and values come from the encoder.
+
+
+\section{Multi-head attention}
+
+
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+    Each of the block before are multi-head attention, with its own $W^Q$, $W^K$, $W^V$ .
+    Since the attention may need to focus on different aspects in different
+    contexts, we generally adopt multiple attention heads in parallel.
+
+    So far we discussed the attention mechanism with a single head.
+
+
+    The final attention output is the concatenation of the various heads'
+    outputs. Passed through a linear layer to go back to the desired vector size.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-26-21.png}
+  \end{minipage}
+\end{center}
+
+
+\section{Some additional details}
+
+\subsection{Residual connections}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+    Residual connections are a technique used to improve
+    gradient flow in backpropagation.
+
+    The gradient “skips” part of the network when being
+    backpropagated. Indeed, these are sometimes called skip connections.
+
+    Is a shortcut to make it easyer non-zero signal to flow through the network.
+
+    The output is the sum of the input plus the input $out = f(x) + x$
+
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-28-14.png}
+  \end{minipage}
+\end{center}
+
+\subsection{Layer Normalization}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+    Add is the residual part, and Nord is the normalization layer. Such as single token vector, we
+    normalize that across all deminsion a specific variance and a speicifi
+
+    This makes the training faster and more stable.
+
+    \begin{equation*}
+      y = \frac{x - E[x]}{\sqrt{Var[x] + \epsilon}} \cdot \gamma + \beta
+    \end{equation*}
+
+    Where $\gamma$ and $\beta$ are learnable parameters, and $\epsilon$ is a small constant to avoid division by zero.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-32-02.png}
+  \end{minipage}
+\end{center}
+
+
+\subsection{Actual connections}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    The encoder and decoder are stacked in this way.
+    The output of the final encoder block becomes the input of the cross attentions of all the decoder.
+    The cross attention only takes the output of the last encoder block.
+
+    This means no match between encoder and decoder block, e.g. encoder can >> decoder, or vice versa.
+    Normally are the same number of blocks, but not necessary.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-39-11.png}
+  \end{minipage}
+\end{center}
+
+
+\subsection{Relative positional embeddings}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    AIAYN uses sinusoidal absolute positional encoding, other, like GPT family, uses learned
+    absolute positional embeddings.
+
+    This means there are different type of positional encoding.
+
+    Relative positional embeddings: one position of a sentence maps to one vector, but some
+    people proposed to use relative positional changes for each words and the words
+    near it.
+
+    Positional information no longer introduced in the input
+    vectors, but at “attention time”. We build vecrtor with a fixed size window.
+
+    Not applicable at the beginning but after compute the key score, when we have the
+    relation.
+
+
+    Nowadays we use a mix of all the techniques.
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-41-26.png}
+  \end{minipage}
+\end{center}
+
+
+\subsection{Advantages of transformers}
+
+
+\begin{itemize}
+  \item \textbf{Parallelization}: Transformers can process all tokens simultaneously, no dep on previous states.
+        Remember, we use teacher forcing to ``know the future'' -  no need to wait
+        for autoregressive generation
+  \item \textbf{Long-range relationships}: With attention, Transformers can see the entire sequence at all times, and
+        choose what to pay attention to. The model does not need to remember because it receave all the input context and use the
+        attention mechanism to focus on the relevant parts. This implies that each token looks at all tokens, this is N2 and represents
+        one of the current limitations of Transformers.
+  \item \textbf{Better memory}: Since there is no sequential processing, forgetting issues generally do not occur
+\end{itemize}
+
+
+
+
+\section{Encoder-decoder architecture}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    The famous example is the T5 - Text-to-Text Transfer Transformer.
+
+    This ia a vanilla endoder-decoder transformer. \textbf{Single framework}, same weights, for
+    multiple tasks.
+
+    Summarization, translation.
+
+    How does it works?
+
+    We have one sentence and we add a prefix to the input, e.g. "summarize: " or "translate" to predend or
+    append to the text, learned to the model.
+
+    Task prefixes to condition the decoder's output, instead of using different architectures.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-55-57.png}
+  \end{minipage}
+\end{center}
+
+\subsection{Single model, multiple tasks!}
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-58-49.png}
+\end{figure}
+
+\begin{tcolorbox}
+  \textbf{Note:} All model have their representation of EOF, in this case we have <\s> 
+\end{tcolorbox}
+
+
+\subsection{Not instruction-tuned, yet!}
+While it may resemble the behavior of instruction-tuned models (``chat-like
+conversation''), that's not it!.
+ T5 is only tuned on specific tasks. The model learns to recognize those tasks and addresses them.
+ 
+ No strong generalization capabilities to new tasks
+
+
+ This means the model is not instruction-tuned! It is an initial model, but can solve multiple
+ things.
+
+ \begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-01-05.png}
+\end{figure}
+
+
+\section{Beyond encoder-decoder}
+
+
+\subsection{Encoder-only architecture}
+
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+    Encoder-only architectures primarily focus on
+understanding and encoding input data
+“without generating output”.
+
+
+The “decoder” part of the architecture is
+removed. The encoder is trained to solve some tasks.
+
+We have an input and want to do someting with this seuence e.g. classification, regression, name
+endity recognition, sentimental analysis, etc. 
+and NOT want to generate a new sequence.
+
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-02-22.png}
+  \end{minipage}
+\end{center}
+
+
+\subsection{BERT - Bidirectional Encoder Representations from Transformers}
+
+This is arguably the most famous encoder-only transformer architecture.
+
+ It is pre-trained on two self-supervised tasks.
+
+ Pre-trained did the initial traingin on this task, but we can do the fine-tuning chanign a little 
+ bit more the weights depends on out task. This process needs only few hundred sentences.
+
+
+ It uses bidirectional attention the endoer self-attention.
+
+ \begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-10-51.png}
+\end{figure}
+
+\subsection{Input encoding}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+
+    We intruduce the \textbf{segment embeddings}, they are two vectors, used by BERT allows to 
+    pass two sentences to the input of the model.
+    This is usefull because traiinig is easyer and second one is allows the qeustion and answer
+
+    
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-13-39.png}
+  \end{minipage}
+\end{center}
+
+\subsection{Masked LM}
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    Google taken some sentences and removed some words, putting blanks. This is 
+    ~15\% of the words.
+    The output of BERT is used to reconstruct the masked tockens.
+    
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-16-27.png}
+  \end{minipage}
+\end{center}
+
+\subsection{Next Sentence Prediction}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
