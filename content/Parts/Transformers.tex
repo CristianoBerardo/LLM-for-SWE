@@ -669,29 +669,29 @@ The decoder produce the output and the cross attention, keys and values come fro
 
 
 \begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-58-49.png}
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-10-58-49.png}
 \end{figure}
 
 \begin{tcolorbox}
-  \textbf{Note:} All model have their representation of EOF, in this case we have <\s> 
+  \textbf{Note:} All model have their representation of EOF, in this case we have <\s>
 \end{tcolorbox}
 
 
 \subsection{Not instruction-tuned, yet!}
 While it may resemble the behavior of instruction-tuned models (``chat-like
 conversation''), that's not it!.
- T5 is only tuned on specific tasks. The model learns to recognize those tasks and addresses them.
- 
- No strong generalization capabilities to new tasks
+T5 is only tuned on specific tasks. The model learns to recognize those tasks and addresses them.
+
+No strong generalization capabilities to new tasks
 
 
- This means the model is not instruction-tuned! It is an initial model, but can solve multiple
- things.
+This means the model is not instruction-tuned! It is an initial model, but can solve multiple
+things.
 
- \begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-01-05.png}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-01-05.png}
 \end{figure}
 
 
@@ -705,16 +705,16 @@ conversation''), that's not it!.
 \begin{center}
   \begin{minipage}{0.65\linewidth}
     Encoder-only architectures primarily focus on
-understanding and encoding input data
-“without generating output”.
+    understanding and encoding input data
+    “without generating output”.
 
 
-The “decoder” part of the architecture is
-removed. The encoder is trained to solve some tasks.
+    The “decoder” part of the architecture is
+    removed. The encoder is trained to solve some tasks.
 
-We have an input and want to do someting with this seuence e.g. classification, regression, name
-endity recognition, sentimental analysis, etc. 
-and NOT want to generate a new sequence.
+    We have an input and want to do someting with this seuence e.g. classification, regression, name
+    endity recognition, sentimental analysis, etc.
+    and NOT want to generate a new sequence.
 
 
 
@@ -731,17 +731,17 @@ and NOT want to generate a new sequence.
 
 This is arguably the most famous encoder-only transformer architecture.
 
- It is pre-trained on two self-supervised tasks.
+It is pre-trained on two self-supervised tasks.
 
- Pre-trained did the initial traingin on this task, but we can do the fine-tuning chanign a little 
- bit more the weights depends on out task. This process needs only few hundred sentences.
+Pre-trained did the initial traingin on this task, but we can do the fine-tuning chanign a little
+bit more the weights depends on out task. This process needs only few hundred sentences.
 
 
- It uses bidirectional attention the endoer self-attention.
+It uses bidirectional attention the endoer self-attention.
 
- \begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-10-51.png}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-05-11-10-51.png}
 \end{figure}
 
 \subsection{Input encoding}
@@ -750,12 +750,14 @@ This is arguably the most famous encoder-only transformer architecture.
 \begin{center}
   \begin{minipage}{0.65\linewidth}
 
+    We have a token vector for each tocken, a positional embedding for each position and segment embedding with
+    two vector  A and B used for question and answer.
 
-    We intruduce the \textbf{segment embeddings}, they are two vectors, used by BERT allows to 
+    We intruduce the \textbf{segment embeddings}, they are two vectors, used by BERT allows to
     pass two sentences to the input of the model.
     This is usefull because traiinig is easyer and second one is allows the qeustion and answer
 
-    
+
   \end{minipage}%
   \hfill
   \begin{minipage}{0.3\linewidth}
@@ -769,10 +771,13 @@ This is arguably the most famous encoder-only transformer architecture.
 \begin{center}
   \begin{minipage}{0.65\linewidth}
 
-    Google taken some sentences and removed some words, putting blanks. This is 
+    Google taken some sentences and removed some words, putting blanks. This is
     ~15\% of the words.
     The output of BERT is used to reconstruct the masked tockens.
-    
+
+    This classification task is called Masked LM. We predict the masked tokens using the linear and softmax
+    activation functions.
+
   \end{minipage}%
   \hfill
   \begin{minipage}{0.3\linewidth}
@@ -782,6 +787,125 @@ This is arguably the most famous encoder-only transformer architecture.
 \end{center}
 
 \subsection{Next Sentence Prediction}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    This second task provides two sentences as input A and B. Is a self supervised task.
+
+    We ask BERT if the sentence B have sense after sentence A. We train the model to havve understanding
+    the consequntiality.
+
+    Here one prediction for each sentence.
+
+    We add an additonal tocken at the beginning of the sentence called CLS, and we use the output vector
+    as the source the information.
+
+    The limitation we cannot store of an entire paragraph in a vector, we need to compress,
+    but this way is a good starting point.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-07-11-50-06.png}
+  \end{minipage}
+\end{center}
+
+
+\subsection{Attention example in BERT}
+
+Esample to encode a simple sentence: "[CLS] The dog ate the food because it was
+hungry [SEP]".
+
+BERT's attentions help understand how each
+token is considered throughout the
+transformer.
+
+How many attention do we have?
+BERT use 12 tranformers layers one after the other. Each layer has 12 heads meaning 12 application
+of the attention mechanism.
+The sentence ha 11 tokens. Eanch head produces $11 \times 11$ attention map.
+
+For a total of 12 layers times 12 heads = 144 attention maps. Each map is a $11 \times 11$ matrix.
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    The attention bean paied to next token, and some time paid attention previous token.
+    The vector weight is influenced by the dog word.
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-07-12-01-14.png}
+  \end{minipage}
+\end{center}
+
+
+\subsection{Decoder-only architecture}
+
+The most interesting part used today.
+
+Is a type arch in witch we make a model extending a sequence. Just give the next token.
+The rest of the output is generated in an \textbf{autoregressive} manner.
+
+We do not have the encoder, the decoder already sees the input as the beginning of the output.
+
+We dont ave the cross-attention, we use only the decoder self-attention. We use cross-attention
+when we use multimodel model. GPT model family is a decoder-only architecture.
+
+\subsection{GPT (Generative Pre-trainined Transformer)}
+
+
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+    Decoder only transformer \textbf{pretrained} on the text generation task.
+    Then, the model is \textbf{fine-tuned} on specific, supervised task.
+    The model is provided the beginning of a sequence as the
+    initial “decoder output”.
+
+    \textbf{Greedy sampling} taks the most probable token at each step.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-10-07-12-10-34.png}
+  \end{minipage}
+\end{center}
+
+
+\section{Sampling approaches}
+
+In order to chose the best token we need to use some teqniques. We have different stragegies usaully
+used together.
+In some cases, we want \textbf{deterministic} behaviors, in other cases we want \textbf{stochastic} behaviors.
+
+\subsection{Some sampling approaches}
+
+\begin{itemize}
+  \item \textbf{Greedy sampling}: Select the token with the highest probability. It is deterministic. Bead beahavior when
+        the model read repatitive sequences (repetition penalty)
+  \item \textbf{Beam search}: Still deterministic. Keep some option and explore the most promising ones. We use \textit{k} how many
+        parallel sentence adding the word
+  \item \textbf{Random sampling}: Semantically has bit confuse
+  \item \textbf{Top-k sampling}: I want to sample but not want long tails that has low prob. If high entropy
+        very distributed.
+  \item \textbf{Top-p sampling}: We want sample high prob. Instad of having a fixed k number of tokens, we select flexible
+        k. The probability of the selected tokens is greater than p (95\% prob mass).
+  \item \textbf{Temperature sampling}: lika random sampling changing the softmax. If T is 0 means greedy sampling (deterministic) case.
+\end{itemize}
+
+
+
 
 
 
