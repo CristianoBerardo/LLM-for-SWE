@@ -1,0 +1,68 @@
+\chapter{Metrics}
+
+\section{Geometric mean (a digression)}
+The geometric mean over values $x_1$, $x_2$, … , $x_N$ computes a mean across $N$ values
+
+\begin{equation*}
+  GM = (x_1 \cdot x_2 \cdot … \cdot x_N)^{\frac{1}{N}} = \prod_{i}^{N} x_i^{\frac{1}{N}}
+\end{equation*}
+
+GM penalizes more (w.r.t .arithmetic mean) the presence of
+low values:
+
+\begin{itemize}
+  \item Arithmetic mean (0.1, 0.9, 0.9) = 0.633
+  \item Geometric mean (0.1, 0.9, 0.9) = 0.433
+\end{itemize}
+
+Computing the product of many values can produce numerical instability.
+So we often find, instead:
+
+\begin{equation*}
+  GM = \exp(\log(\prod_{i}^{N} x_i)) = \exp(\frac{1}{N} \sum_{i}^{N} \ln(x_i))
+\end{equation*}
+
+
+\section{Perplexity}
+
+Perplexity is a metric that quantifies how uncertain the model is in
+predicting the (correct) next word
+
+\begin{itemize}
+  \item \textbf{High perplexity}: the model is uncertain about the “correct” next word
+  \item \textbf{Low perplexity}: the model is certain about the “correct” next word
+\end{itemize}
+It is quantified in terms of how large the probability assigned to each
+next word of a sentence is.
+
+The number represents the average \footnote{Geometric mean} number of words the model is
+indecise over, for a sentence.
+
+\paragraph{Example} The dog chased the _____
+
+Probability distribuAon:
+
+\begin{itemize}
+  \item P(cat) = 0.25
+
+  \item P(mouse) = 0.15
+  \item P(table) = 0.05
+
+  \item P(chair) = 0.1
+
+  \item P(computer) = 0.05
+  \item P(tger) = 0.2
+  \item P(crocodile) = 0.1
+
+  \item P(owner) = 0.1
+
+  \item P(the) = 0
+
+\end{itemize}
+
+Correct word: cat: P(cat) = 0.25
+Even if the vocabulary has 10
+words, It's as if the model was
+confused between 4 words
+(1/0.25 = 0.25-1), each with
+equal probability
