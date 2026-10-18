@@ -74,5 +74,8 @@
     "-y=defaultIndent: '  '"
   ],
   "pasteImage.path": "${currentFileDir}/images",
-  "pasteImage.insertPattern": "\\begin{figure}[h!]\n\t\\centering\n\t\\includegraphics[width=0.3\\linewidth]{content/Parts/${imageFilePath}}\n\\end{figure}"
+  // "pasteImage.insertPattern": "\\begin{figure}[h!]\n\t\\centering\n\t\\includegraphics[width=1\\linewidth]{content/Parts/${imageFilePath}}\n\\end{figure}",
+  // "pasteImage.insertPattern": "\\begin{flushleft}\n\t\\begin{minipage}{0.65\\linewidth}\t\t$1\t\\end{minipage}%\t\\hfill\t\\begin{minipage}{0.3\\linewidth}\n\t\t\\centering\n\t\t\\includegraphics[width=1\\linewidth]{content/Parts/${imageFilePath}}\n\t\\end{minipage}\n\\end{flushleft}$0"
+
+  "pasteImage.insertPattern": "\\begin{flushleft}\n\t\\begin{minipage}{0.65\\linewidth}\n\n\n\t\\end{minipage}%\n\t\\hfill\n\t\\begin{minipage}{0.3\\linewidth}\n\t\t\\centering\n\t\t\\includegraphics[width=1\\linewidth]{content/Parts/${imageFilePath}}\n\t\\end{minipage}\n\\end{flushleft}"
 }
