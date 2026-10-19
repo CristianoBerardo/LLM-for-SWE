@@ -206,17 +206,73 @@ others
 
 \section{FastText}
 
-Allows to figure out some new words. Braking up words into subwords. E.g. <where> -->  <wh, whe, her, ere, re>
+Allows to figure out some untraked/new words. Braking up words into subwords. E.g. <where> $\to$  <wh, whe, her, ere, re>. In addition, some subwords can be resued.
 Insufficeint, the "in" has different meaning between two words and the prefixes of a word.
+
+
+A vector representation is learned for each subword. The vector for a word is given by the sum of the vectors of its subwords.
+
+$v_{where} = v_{wh} + v_{whe} + v_{her} + v_{ere} + v_{re}$
+
+We can compose subword vectors to generate vectors for new words!
 
 Does this works well? Not the perfect solution.
 
 
 \section{Visualizations - Semantic meanings}
-Reducing to 2 dimensions with Principal
-Component Analysis (for visualization
-purposes). The words belonging to the 3 categories are
-well-separated in the "compressed" embedding space
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    300-dimensional FastText vectors for words
+    belonging to 3 separate categories:
+
+    \begin{itemize}
+      \item Household items
+      \item Mammals
+      \item Birds
+    \end{itemize}
+
+    Reducing to 2 dimensions with Principal
+    Component Analysis (for visualization
+    purposes). The words belonging to the 3 categories are
+    well-separated in the "compressed" embedding space
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-19-17-41-55.png}
+  \end{minipage}
+\end{flushleft}
+
+\section{Visualizations - Relationships}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    Visualizing the vectors for countries and capital
+    cities. Connecting each country to its capital city.
+
+    We can see that there is a transformation
+    (translation) that approximately connects each
+    pair of words.
+
+    The vector of the translation can be obtained
+    subtracting a capital city from its country. E.g. Germany-Berlin, represented the relationship "capital of".
+
+    We can apply this transformation by “adding” it
+    to other countries, e.g. Spain + "capital of" $\to$ Spain + (Germany - Berlin)
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-19-17-43-52.png}
+  \end{minipage}
+\end{flushleft}
 
 
 
