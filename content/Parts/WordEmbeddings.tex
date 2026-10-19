@@ -1,53 +1,207 @@
 \chapter{Vector Embedding}
 
-Transformers builded in 2017 after the famous google's paper “attention is all you need”.
-Embeddings: advanced reprersentations to reppresents words/tokens in a vectors in a dense ways with limited numbers of dimensions ~300 dims.
-We would like to have:
-semenatic meaning of a world
-relationsheep among words, worlds with similar connections are linked via similar transformers
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-28-09-35-11.png}
-\end{figure}
 
-\section{One-Hot encoding}
-One-hot encoding was used before embeddings. Vocaboly of 5 words with 5 dimension vector and set 0s and only one 1 each word.
-Disadvantages:
-This approach is sparse, dimensions = words count, not feasible.
-Not preservation of similarity and no relationship among words. Vector are orthogonal.
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    Word embeddings are an advanced and \textbf{dense} vector representations of words, with a limited number of dimensions. Dense as opposed to sparse, e.g. one-hot encoding.
+
+    Each word is mapped to a \textbf{vector of real numbers}. High-dimensionalities,
+    300+ dimensions, are used to have enough space to represent various facets of words.
+
+    Word embeddings capture \textbf{semantic meanings} and \textbf{reletionships} between
+    words.
+
+    \begin{itemize}
+      \item \textbf{Semantic meaning}: words with similar meanings have similar representations
+      \item \textbf{Relationships}: words with similar connections are lined via similar transformations
+    \end{itemize}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.7\linewidth]{content/Parts/images/2026-10-19-08-38-36.png}
+  \end{minipage}
+\end{flushleft}
+
+
+
+% Transformers builded in 2017 after the famous google's paper "attention is all you need".
+% Embeddings: advanced reprersentations to reppresents words/tokens in a vectors in a dense ways with limited numbers of dimensions ~300 dims.
+% We would like to have:
+% semenatic meaning of a world
+% relationsheep among words, worlds with similar connections are linked via similar transformers
+
+
+
+\section{Before word embeddings: One-Hot encoding}
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    One-hot encoding was used before embeddings.  A vocabulary of 5 words have 5 dimension vector where only one bit set to 1 and the rest are 0.
+
+    We assume a vocabulary $W$ with $|W|$ words. For example, a vocabulary of 5 words: \textit{cat, dog, fish, bird, mouse}, $|W| = 5$. An order can be established among words e.g. lexicographically.
+
+    One-hot encoding creates for each of the $|W|$ words, a $|W|$-dimensional sparse vector
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.6\linewidth]{content/Parts/images/2026-09-28-09-35-11.png}
+  \end{minipage}
+\end{flushleft}
+
+\subsection{Problems of One-Hot Encoding}
+
+\begin{itemize}
+  \item \textbf{Sparsity}: the vectors are sparse, this leads to scalability issues. A standard vocabulary can have 50K words, implying a 50K-dimensional vector for each word. The vector space is not used efficiently
+  \item \textbf{Orthogonality}: the is no preservation of similaruty or relationships. Here, all pairs of words have exactly the same
+\end{itemize}
+
+
+% Disadvantages:
+% This approach is sparse, dimensions = words count, not feasible.
+% Not preservation of similarity and no relationship among words. Vector are orthogonal.
+
+
 \section{Distributed representation}
-We distribute the sematic word across all the dimension.
+
+
+
+
+We distribute the sematic word across all the dimension. And one-hot encoding is a type of \textbf{local representation} where each entity is represented by a unique and isolated identifier.
+
+By contrast, \textbf{distributed representation} aim to distruibute the information across several dimensions.
+
 But how do we figure it the vector? We use NN model to learn there words and create this vectors.
-E.g. I use a …. to write the essay. We ask the model to predict the blank, this encourage the model to figure it out, starting the surrounded words, context.
+
+We let models, e.g. neural networks, to learn these representations by craafcting a task and letting the model solve it.
+
+
+E.g. "I use a ... to write the essay". We ask the model to predict the blank, this encourage the model to figure it out, starting the surrounded words called context.
 Can we figuire out the probability of each vocabulary, based on the context?
 Some step to
 
-\begin{itemize}
-  \item assign a vector for each words in the context, at beginning is random number
-  \item Take all of this vector and aggregate all vectors and sum them up (\textbf{context vector})
-\end{itemize}
+\subsection{Solving the right task}
 
-Context vector and vector of all possible words.
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    \begin{enumerate}
+      \item assign a vector for each words in the context, at beginning is random number
+      \item Take all of this vector and aggregate all vectors and sum them up (\textbf{context vector})
+      \item Assign a vector for each candidate output word, at beginning is random number
+      \item Compute the distance between the context vector and all possible output words (e.g., via dot product)
+      \item Find the word that best matches the context
+      \item Is it the correct word?
+      \item Adjust all vectors accordingly (via gradient descent)
+    \end{enumerate}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-19-09-07-51.png}
+  \end{minipage}
+\end{flushleft}
+
+The same process is applied to millions of sentences. Similar words are found in similar contexts and to solve the previous task, the word vectors of similar words must be simiar.
+
+E.g. "I used a \textbf{pencil} to write the essay" and "You used my \textbf{pen} to write a letter"
 
 Cosine similarity = cross entropy → gradient descent → backpropagation → update the vectors to make the loss function go dow.
+
+
 In this is reaped for millions of sentences.
 Pence or pencil now are similar and connected, semantic related, now two word can have same number, but it is fine.
 
 \section{In terms of matrices}
-We need to compute a matrix moltiplication. All vectors for input words can be staked into matrix.
 
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    We need to compute a matrix moltiplication. All vectors for input and output words can be staked into matrix $W_{in}(d \times V)$ and $W_{out}(d \times V)$.
+
+    The entire context can be represented a binary vector of presences, $e(V\times 1)$.
+
+    \begin{tcolorbox}
+      \textbf{Note:} This loses the order of the words, \textbf{bag of words} approach.
+    \end{tcolorbox}
+
+    $ h = W_{in} e(d \times 1)$ computes the sum of the vectors for the context words.
+
+    Where $e_j$ acts as a selector of the $j^{th}$ column within $W_{in}$.
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-19-09-18-51.png}
+  \end{minipage}
+\end{flushleft}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    Next, we search among the vectors in $W_{out}$, the most
+    similar to $h$. We can use the dot product as a measure of similarity. ("How aligned are the vectors?").
+
+    $\tilde{p} = h^T W_{\text{out}}$ is a vector of similarities between $h$ and each possible word.
+
+    We can normalized the values in $\tilde{p}$ be positive and sum to 1 $p_i = \text{softmax}(\tilde{p}_i)$.
+
+
+    Remember, we know what the correct target word is. We can use a cross-entropy loss to update $W_{in}$ and $W_{out}$.
+
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-19-09-26-16.png}
+  \end{minipage}
+\end{flushleft}
+
+
+
+\section{Neural Language Models & word2vec}
 
 This was presented in a paper of 2000. Then in the 2014, thirty years later.
-\section{Limitation of WordToVec}
+
+word2vec does all of the previous things, with some caveats.
+
+Two possible tasks:
 
 \begin{itemize}
-  \item Cannot manage words are not in the vocabulary, OOV (out of vocabulary)
-  \item This vector are not contextualized
+  \item \textbf{Continuous Bag of Words}: context è predict middle word $\to$ as previously described
+  \item  \textbf{Skip-gram}: middle word $\to$ predict context
 \end{itemize}
 
-After the tranign, the vector is the same, and during the infference some word depends on
-the context, e.g. bank (river or money).
+Workarounds to prevent computing softmax (computationally expensive!)
+
+\begin{itemize}
+  \item \textbf{Hierarchical softmax} Huffman encode vocabulary, predict left/right path $O(\log_2(V))$
+  \item \textbf{Negative sampling} predict whether a word is/is not the "correct" one
+\end{itemize}
+
+
+\subsection{Limitation of WordToVec}
+
+
+While word2vec addressed many problems, some still exist. Among
+others
+
+\begin{itemize}
+  \item \textbf{Inability to handle out-of-vocabulary words}: Cannot manage words are not in the vocabulary, OOV (out of vocabulary)
+  \item \textbf{Lack of contextualized vectors}: This vector are not contextualized. After the training, the vector is fixed and not affected by context, but during the infference some word depends on the context, e.g. bank (river or money).
+\end{itemize}
 
 
 \section{FastText}
@@ -62,46 +216,7 @@ Does this works well? Not the perfect solution.
 Reducing to 2 dimensions with Principal
 Component Analysis (for visualization
 purposes). The words belonging to the 3 categories are
-well-separated in the “compressed” embedding space
+well-separated in the "compressed" embedding space
 
-
-\section{Inside an RNN}
-We have three dense NN layers. Two input and two output.
-
-\begin{itemize}
-  \item \textbf{Input layer}: processes the current input,
-        produces a vector with the same dimensionality as the hidden state. Makes the input
-        and the state the same size dimentionality
-  \item \textbf{State layer}: processes the hidden state from
-        the previous step
-
-  \item \textbf{Output layer}: Summed the two vectors and produces
-\end{itemize}
-
-\subsection{Weight sharing}
-
-\subsubsection{Backpropagation-through-time}
-
-
-
-\section{Encoder-decoder architecture}
-
-Ideally, the model should:
-
-\begin{itemize}
-  \item See the entire sequence before starting generating the output
-\end{itemize}
-
-
-\begin{center}
-  \begin{minipage}{0.65\linewidth}
-
-  \end{minipage}%
-  \hfill
-  \begin{minipage}{0.3\linewidth}
-    \centering
-    \includegraphics[width=0.3\linewidth]{content/Parts/images/2026-09-28-11-13-30.png}
-  \end{minipage}
-\end{center}
 
 

@@ -1,5 +1,46 @@
 \chapter{Recurrent Neural Networks}
 
+
+\section{Inside an RNN}
+We have three dense NN layers. Two input and two output.
+
+\begin{itemize}
+  \item \textbf{Input layer}: processes the current input,
+        produces a vector with the same dimensionality as the hidden state. Makes the input
+        and the state the same size dimentionality
+  \item \textbf{State layer}: processes the hidden state from
+        the previous step
+
+  \item \textbf{Output layer}: Summed the two vectors and produces
+\end{itemize}
+
+\subsection{Weight sharing}
+
+\subsubsection{Backpropagation-through-time}
+
+
+
+\section{Encoder-decoder architecture}
+
+Ideally, the model should:
+
+\begin{itemize}
+  \item See the entire sequence before starting generating the output
+\end{itemize}
+
+
+\begin{center}
+  \begin{minipage}{0.65\linewidth}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-09-28-11-13-30.png}
+  \end{minipage}
+\end{center}
+
+
 Limitations of Fully-Connected Neural Networks (FCNNs). They have some inputs and some
 output layers, interlieved by some hidden layers.
 
