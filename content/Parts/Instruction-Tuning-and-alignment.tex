@@ -4,6 +4,8 @@
 
 \begin{flushleft}
   \begin{minipage}{0.65\linewidth}
+    The models we use nowadays works with zero-shot messages.
+
     The LLMs discussed so far are next token predictors.
 
     ChatGPT-like assistants need to:
@@ -20,7 +22,7 @@
   \hfill
   \begin{minipage}{0.3\linewidth}
     \centering
-    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-19-11-21-36.png}
+    \includegraphics[width=0.7\linewidth]{content/Parts/images/2026-10-19-11-21-36.png}
   \end{minipage}
 \end{flushleft}
 
@@ -36,12 +38,445 @@ without providing new examples
 for each task
 
 \section{Including instructions in prompts}
-T5 provides a general
-architecture that includes
-the task to be performed as a
-part of the prompt.
 
-The model learns to
-condition the answer based
-on the request in the input
-context.
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+    T5 provides a general architecture that includes the task to be performed as a part of the prompt.
+
+    The model learns to condition the answer based on the request in the input context.
+
+    T5 does not generalize to new tasks, it cannot "translate german to english", it expect to have a specific format.
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.6\linewidth]{content/Parts/images/2026-10-21-11-44-09.png}
+  \end{minipage}
+\end{flushleft}
+
+\section{Generalizing to new tasks - T0}
+
+T0 is a t5 inspired model. It was \textbf{pretrained} on masked LM task and then \textbf{finetuned} on multitask QA datasets. They insctuct the model to respond to the question. They change only the dataset.
+
+The question for this model was "Can this fine-tuning help the model generalize to other tasks?"
+
+\subsection{Fine-tuning datasets}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    The fist think is using some part of the dataset for fine-tuning and another part for evaluation datasets.
+    To verify zero-shot generalization to new tasks, the datasets are
+    divided. All datasets for a task (e.g. ``Natural Language Inference'')
+    are either used for training, or for testing
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{content/Parts/images/2026-10-21-11-51-05.png}
+  \end{minipage}
+\end{flushleft}
+
+\subsection{Templates for prompting}
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    It is generally difficult to obtain large
+    datasets in the form of Question-Answer
+    pairs. To overcome the problem, the authors of T0
+    used templates:
+
+    \begin{itemize}
+      \item Each task was phrased as a question
+      \item Multiple rephrasings for the same task
+      \item Sometimes, inverting the task ("What would be a good question for this answer? <answer>")
+    \end{itemize}
+
+    Ideally, the model generalizes to other forms
+    of asking the same question. Because of the semantic similarity shared.
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.7\linewidth]{content/Parts/images/2026-10-21-11-53-01.png}
+  \end{minipage}
+\end{flushleft}
+
+
+\subsection{Generalization to new tasks}
+
+Indeed, T0 shows a remarkable improvement in performance on new tasks, in
+zero-shot. Consistently beats T5. Generally also better than GPT-3
+
+\subsection{Prompt robustness}
+
+Can the model been robust on different rephrasings of the same task?
+The authors show that adding more prompt versions improves the model performance
+even for new tasks.
+This seems to indicate that the model is getting overall better capabilities of
+providing answers for new tasks by seeing more types of questions.
+
+\subsection{Finetuned Language Net - FLAN - 2022}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    Google produce a similar paper, "Finetuned Language Models are Zero-Shot Learners", as T0 group.
+    Instruction tuning substantially improves zero-shot performance on unseen tasks.
+
+    Similar settings (held out tasks), 10 prompts for each dataset.  Comparisons against other non
+    instruction-tuned models.
+
+    Consistent results: instructiontuned versions generally perform
+    better than non-tuned counterparts
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-21-12-05-04.png}
+  \end{minipage}
+\end{flushleft}
+
+\section{Aligning to human preferences}
+
+Making a model larger may improve its performance in next token
+prediction capabilities, and zero-shot task generalization.
+
+However, models can still be \textbf{untruthful}, \textbf{toxic}, not \textbf{helpful}, models are not aligned with human preferences.
+
+\section{Problems with classic training of LMs}
+
+Now we focus about summarization tasks.
+
+In the paper "Learning to summarize with human feeback", authors highlight that
+LMs are limited by:
+
+\begin{itemize}
+  \item \textbf{Poor metrics} (e.g., ROUGE), not capturing information about quality of outputs
+  \item \textbf{Poor objectives} (e.g., cross-entropy) do not distinguish between important errors and minor ones. E.g., making up facts and using synonyms are penalized in the same way in the loss. Normlly we use Cross-entropy, nice for next token prediction, but not for summarization tasks where sinonyms needed.
+  \item  During training, models do not distinguish between \textbf{high}- and \textbf{low-quality} data. Models learn equally across all types of qualities
+\end{itemize}
+
+\subsection{Three-step approach}
+
+The proposed approach consists of three steps:
+
+\begin{itemize}
+  \item Collect human feedback
+  \item Train reward model
+  \item Fine-tune model to learn “human” feedback
+\end{itemize}
+
+The proposed approach is applied to the task of post summarization,
+by using the TL;DR dataset from Reddit
+
+
+\subsubsection{Collect human feedback}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    Initial summaries are generated according to some
+    model. E.g., models fine-tuned on different subsets of data
+
+    A human annotator is presented with pairs of
+    summaries for the same input
+
+    The human chooses the preferred summary
+
+    \begin{tcolorbox}
+      \textbf{Note}: humans are better at picking the favorite between
+      two items than they are at giving absolute grades. Relative comparisons
+    \end{tcolorbox}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.55\linewidth]{content/Parts/images/2026-10-21-12-18-08.png}
+  \end{minipage}
+\end{flushleft}
+
+\paragraph{Humans as evaluation functions}
+We can see the previous evaluation exercise as having a human that
+reads a post $p$, two summaries, $s_1$ and $s_2$ (in a text space $C$), and
+produces a verdict (0/1)
+\vspace{-0.4cm}
+\begin{equation*}
+  f(p, s_1, s_2) : C \times C \times C \to \{0, 1\}
+\end{equation*}
+
+\vspace{0.7cm}
+Or, we can explicitly assert that humans produce a "reward" for each
+summary via $r(\cdot)$, and produce a verdict 0/1 based on the largest
+reward
+
+\begin{gather*}
+  r(p, s) : C \times C \to \mathbb{R} \\
+  f(p, s_1, s_2) = 1(r(p, s_1) > r(p, s_2))
+\end{gather*}
+
+
+\paragraph{Cons of humans}
+
+\begin{itemize}
+  \item \textbf{Cost \& scalability}: collecting human feedback at the scale required for
+        fine-tuning a model is impractical and expensive
+  \item \textbf{Inconsistency}: The same human
+        may also be inconsistent across evaluations
+  \item \textbf{Simplicity of feedback}: Producing a more sophisticated score that
+        objectively accounts for various aspects may be difficult for humans
+        to do
+\end{itemize}
+
+\subsubsection{Train a Reward Model}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    We take the human feedback the model take the sumaries and the model learns to predict the human feedback.
+
+    Instead of using human feedback directly, we
+    train a Reward Model $r_\theta$ (another LM).
+
+    The reward model predicts a scalar value,
+    proportional to the quality of the result.
+
+    For two summaries $s_j$
+    , $s_k$ of a post $p$, we can
+    produce the scores. We can mximize the score between this two:
+
+    \begin{itemize}
+      \item $r_j = r_\theta(p, s_j)$
+      \item $r_k = r_\theta(p, s_k)$
+    \end{itemize}
+
+
+    We compute the loss of the reward model to
+    maximize the gap in rewards:
+
+    For instance, $r_j - r_k$ should be large if $s_j$
+    is the "better" result. $\log(\sigma(r_j - r_k))$ is used in the paper
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{content/Parts/images/2026-10-21-12-27-23.png}
+  \end{minipage}
+\end{flushleft}
+
+\paragraph{How good is the Reward Model?}
+
+One major concern of replacing humans with
+models is about the quality of the result. Can a model make the same predictions as
+humans?
+
+The results show:
+
+\begin{enumerate}
+  \item Larger models achieve better results (2x model → 1.8\% increase)
+  \item More annotated data improves results (2x data → 1.1\% increase)
+  \item Results get close to the performance of a single human (without all the cons of humans)
+  \item But, not as good as the ensemble of humans approach
+\end{enumerate}
+
+
+\subsubsection{Fine-tune model on feedback}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+
+    We make a copy of the original model (fine-tuned
+    on the Reddit TL;DR dataset).
+
+    Let's refer to the original policy as $\pi_{old}$, and the one of
+    the copy as $\pi_{new}$
+
+    We fine-tune the copied model and use the original
+    model as a "support" (see next slide).
+
+    We use the RM $r_\theta$ to produce the reward to give to
+    the policy $\pi_{new}$
+
+    how much would a person like the answer?
+
+
+    \paragraph{Fine-tuning on human feedback}
+
+    We generate a summary y based on the "copy" policy.
+    In other words, y is sampled from $\pi_{new}$
+
+
+    We can frame the reward for the model as:
+
+    \begin{equation*}
+      R(x, y) = r_\theta(x, y) - \beta \log(\frac{\pi_{new}(y|x)}{\pi_{old}(y|x)})
+    \end{equation*}
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.6\linewidth]{content/Parts/images/2026-10-21-12-34-58.png}
+  \end{minipage}
+\end{flushleft}
+
+
+\paragraph{Why use a KL divergence?}
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    It is tempting to maximize the reward $r(\cdot)$,
+    regardless of how distant from the original
+    model we go.
+    However, $r(\cdot)$ is a proxy for human
+    preference, not the actual human
+    preference.
+    Maximizing $r(\cdot)$ ends up producing a very
+    different result from the original one.
+    The new model improves the score from the
+    reward model, but it no longer provides useful
+    summaries.
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=0.8\linewidth]{content/Parts/images/2026-10-21-12-44-39.png}
+  \end{minipage}
+\end{flushleft}
+
+
+\paragraph{Preference results}
+
+
+
+
+
+\begin{flushleft}
+  \begin{minipage}{0.65\linewidth}
+
+    Annotators are asked to choose the
+    preferred version between the humanwritten and the model-generated summary
+
+    Different models are compared:
+
+    \begin{itemize}
+      \item Pretrain only (blue): the base LM, without fine-tuning
+      \item Supervised learning (green): the LM, fine-tuned on the
+            Reddit TL;DR dataset
+      \item Human feedback (yellow): the supervised learning LM,
+            additionally fine-tuned to improve based on the
+            human feedback reward
+    \end{itemize}
+
+
+
+
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.3\linewidth}
+    \centering
+    \includegraphics[width=1\linewidth]{content/Parts/images/2026-10-21-12-46-54.png}
+  \end{minipage}
+\end{flushleft}
+
+Results show a clear human preference for
+the HF model w.r.t. all others. even better than the human-generated
+
+
+
+\section{Aligning instruction-tuned models}
+The previous work was focused on a single task (summarization).
+Other works explored alignment for other, single tasks.
+
+OpenAI introduces InstructGPT:
+
+\begin{itemize}
+  \item Extending the model to address various tasks
+  \item Using instruction tuning, using human-written answers not with templating!
+\end{itemize}
+
+Main takeaways:
+
+\begin{itemize}
+  \item Annotators prefer InstructGPT (1.3B) outputs over GPT-3 (175B)
+  \item InstructGPT is more truthful, slightly less toxic than GPT-3
+  \item InstructGPT is aligned to annotators it never learned from
+  \item InstructGPT generalizes to new tasks not in the fine-tuning datasets
+\end{itemize}
+
+\subsection{InstructGPT steps}
+
+\begin{center}
+  \begin{minipage}{\linewidth}
+    \centering
+    \includegraphics[width=0.9\linewidth]{content/Parts/images/2026-10-21-12-52-01.png}
+  \end{minipage}
+\end{center}
+
+
+
+
+
+\subsection{A new trend in town}
+InstructGPT shows that:
+
+\begin{itemize}
+
+  \item Pretraining alone is not enough for user-aligned behavior.
+  \item  Fine-tuning using high-quality, instruction-following data became essential
+\end{itemize}
+
+\paragraph{New Approach}
+
+\begin{enumerate}
+  \item Pretrain a model on large quantities of (low-quality) data
+
+        \begin{itemize}
+          \item Scraped from various, potentially unreliable, sources
+          \item This stage focuses on learning general language patterns and knowledge
+          \item These models exhibit alignment issues with user instructions or generating high-quality,
+                useful outputs
+        \end{itemize}
+
+  \item Collect smaller, higher-quality datasets
+  \item Use RLHF (Reinforcement Learning from Human Feedback) to align models to user preferences
+\end{enumerate}
+
+
+The original ChatGPT is based on InstructGPT.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
