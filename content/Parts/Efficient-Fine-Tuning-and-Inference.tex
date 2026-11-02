@@ -440,8 +440,59 @@ Makes better use of the range of possible values.
 No calibration step required.
 More computationally expensive (at inference, we compute values on the activations)
 
+\section{LLM.int8()}
+
+\subsection{Vector-wise quantization}
+
+\begin{itemize}
+  \item Compute scaling constants for each row/vector of matrices
+  \item Instead of 1 per matrix
+  \item This produces better-quantized dot products
+\end{itemize}
 
 
+\subsection{Mixed-precision decomposition}
+
+Authors observe that there are some outlier
+weights/activations (features) in larger models, with large
+magnitudes
+
+\begin{itemize}
+  \item Approximately $0.1\%$ of all features
+  \item These outliers are useful for LLMs
+  \item To better handle these outlier features, we can decompose each matrix into non-outliers (8-bit precision) and outliers (16-bit precision)
+\end{itemize}
+
+\section{Reduced floating point precision}
+
+
+A less drastic measure, which we can easily adopt, is converting a
+model to half precision (float16). We typically use float32 (single precision) models. However, we don't always need that much precision. By simply converting a model to half precision, we can save half the
+space of the model!
+We preserve values in a continuous range of values, so this is not
+considered quantization. Rather easy in PyTorch!
+
+\section{Model distillation}
+
+A smaller model can be distilled from a larger model, so as to obtain behaviors similar to those of the original model.
+
+Distillation is generally done with a teacher/student paradigm:
+
+\begin{itemize}
+  \item \textbf{Teacher}: the original (larger) model, we want to reduce in size
+  \item \textbf{Student}: a smaller model we want to use to mimic the teacher
+\end{itemize}
+
+The student is trained to predict the teacher's probability distribution (across all words) instead of the correct word
+
+By learning from the teacher, the student receives information unavailable in the ground truth.
+E.g., the correct word could be cat (cat: 1, everything else: 0)
+But the teacher may provide a more semantically rich target  (cat: 0.6, kitten: 0.2, kitty: 0.1, cats: 0.1)
+
+
+\section{Model distillation in LLMs}
+It's been shown that distilled models can achieve comparable
+performance to the original ones, despite smaller architectures.
 
 
 
