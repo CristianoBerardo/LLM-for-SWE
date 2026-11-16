@@ -174,12 +174,12 @@ might as well be a fortunate mistake"
 
     Fine-tuning of a model (e.g., a single layer W).
     Doing fine-tuining we update the $\delta$ produces an
-    incremental change Δ𝑊 applied to the weights.
+    incremental change $\Delta W$ applied to the weights.
 
     After fine-tuning, we have new weights W'
     such that: $W' = W + \delta W$
 
-    We can fix (freeze) W and only learn the incremental change Δ𝑊
+    We can fix (freeze) W and only learn the incremental change $\delta W$
     during fine-tuning
 
   \end{minipage}%
@@ -250,7 +250,8 @@ combinations of the other. $l =AB^T$, $A$ and $B$ are $n \times r$, with $r < n$
 \end{flushleft}
 
 
-\subsection{LoRA (low rank assumption of Δ𝑊)}
+
+\subsection{LoRA (low rank assumption of $\Delta W$)}
 
 \begin{flushleft}
   \begin{minipage}{0.65\linewidth}
@@ -298,7 +299,7 @@ queries and values, producing fewers parameters!
 
 \subsubsection{Considerations on LoRA}
 The benefits increase as we increase the model size.
-with 𝑑𝑚𝑜𝑑𝑒𝑙 = 12,288 (GPT-3), we get up to 10,000x fewer parameters!
+with dmodel= 12,288 (GPT-3), we get up to 10,000x fewer parameters!
 Authors claim the hardware requirements go down by a factor of 3 (forward pass still needed “in full").
 
 We can fine-tune the same model on multiple tasks. Each task $t$ will have its $A_t$
@@ -429,7 +430,7 @@ activations by limiting the number of representable values.
 To quantize weights/activations, we need to know scale and zero-point
 
 For \textbf{weights}, we can compute the information beforehand
-For \textbf{activations}, there are two approaches: static & dynamic quantization
+For \textbf{activations}, there are two approaches: static \& dynamic quantization
 
 \subsubsection{Static quantization}
 Pre-compute scale, zero-point, then used them in a fixed way. A validation set is used to measure distributions (calibration phase). Faster, more consistent
